@@ -28,7 +28,7 @@ in the runner file to 15000.
 "silverYY.r" is used for 5xNS size and implemented by runner file of the same name.
 
 Data in Table 2 and Fig. 5 come from 
-"platinumFF_rpois.r" and the runner file "platinumFF_rpois_runner.r". Change SSBA to 5,457 for inner fjord runs and 15,000
+"platinumFF_lnorm.r" and the runner file "platinumFF_lnorm_runner.r". These explore stochastic migration. Change SSBA to 5,457 for inner fjord runs and 15,000
 for outer coast. The vector Allk is the number of migrants.
 
 Data in Fig. 6 was generated as follows:
