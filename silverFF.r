@@ -1,7 +1,7 @@
 
-#mig=5;
-#ssba=5500;
-#seed =1;
+mig=5;
+ssba=5500;
+seed =1;
 #high sel
 
 #now make flexible with number of microsatellites
@@ -11,6 +11,8 @@
 library(batch)
 parseCommandArgs()
 
+#this one seems good
+#I seem to have fixed that pesky bug?
 library(Rcpp)
 library(inline)
 require(RcppArmadillo)
@@ -1155,13 +1157,6 @@ S_xA=rep((1-meanFullF),ages);
 S_xA[(ages-1)]=0;
 S_xB=rep((1-meanFullF),ages);
 S_xB[(ages-1)]=0;
-for (int i=0;i<ages-2;i++){
- S_xA[i]=N_init_a1_star[i+1]/N_init_a1_star[i]}
-
-
-Rf_PrintValue(wrap(S_xA));
-Rcout<<"S_xA"<<std::endl;
-
 for (int i=0;i<ages;i++){  //make sure they are positive (neg can happen when fishing gets too high)
 if (S_xA[i]<0){S_xA[i]=0;}
 if (S_xB[i]<0){S_xB[i]=0;}
@@ -1252,8 +1247,7 @@ else{VkB=0;}
 //VkA and VkB are total variance 
 VkA_vec[k]=VkA;
 VkB_vec[k]=VkB;
-Rf_PrintValue(wrap(VkA));
-Rcout<<"VkA"<<std::endl;
+
 
 double NeA = (4*N_init_a1_star[0]*L_popA)/(VkA+2);
 double NeB = (4*N_init_a2_star[0]*L_popB)/(VkB+2);
@@ -1582,26 +1576,26 @@ recB = clone(RecB);
 //mutate new recruits remove for testing 
 //double prob;
 //double dir;
-for (int j=0;j<nSNP;j++){
-for (int i=0; i < recA.nrow(); i++){  //recA mutation for each allele
-prob=as<double>(runif(1,0,1));  
-dir=as<double>(runif(1,0,1));		
-if(prob<0.01*MUS[j]&dir<0.5){	
-recA(i,j)=recA(i,j)+1;
-}else if (prob<MUS[j]&dir>0.5){
-recA(i,j)=recA(i,j)-1;
-}			
-}
-for (int i=0; i < recB.nrow(); i++){  //recB mutation for each allele
-prob=as<double>(runif(1,0,1));  
-dir=as<double>(runif(1,0,1));		
-if(prob<0.01*MUS[j]&dir<0.5){	
-recB(i,j)=recB(i,j)+1;
-}else if (prob<MUS[j]&dir>0.5){
-recB(i,j)=recB(i,j)-1;
-}			
-}
-}
+//for (int j=0;j<nSNP;j++){
+//for (int i=0; i < recA.nrow(); i++){  //recA mutation for each allele
+//prob=as<double>(runif(1,0,1));  
+//dir=as<double>(runif(1,0,1));		
+//if(prob<0.01*MUS[j]&dir<0.5){	
+//recA(i,j)=recA(i,j)+1;
+//}else if (prob<MUS[j]&dir>0.5){
+//recA(i,j)=recA(i,j)-1;
+//}			
+//}
+//for (int i=0; i < recB.nrow(); i++){  //recB mutation for each allele
+//prob=as<double>(runif(1,0,1));  
+//dir=as<double>(runif(1,0,1));		
+//if(prob<0.01*MUS[j]&dir<0.5){	
+//recB(i,j)=recB(i,j)+1;
+//}else if (prob<MUS[j]&dir>0.5){
+//recB(i,j)=recB(i,j)-1;
+//}			
+//}
+//}
 
 //MIGRATION
 
@@ -1639,15 +1633,6 @@ NumericMatrix clonerecA=clone(recA);
 BtoAlist=SeqLen(clonerecB.nrow()/2)-1;
 AfromBlist=SeqLen(clonerecA.nrow()/2)-1;
 
-//new other way migration
-
-NumericVector AtoBlist(nmig);
-NumericVector BfromAlist(nmig);
-
-AtoBlist=SeqLen(clonerecA.nrow()/2)-1;
-BfromAlist=SeqLen(clonerecB.nrow()/2)-1;
-
-
 for (int i=0;i<nmig;i++){
 double probfromB=as<double>(runif(1,0,(clonerecB.nrow()/2)-1-i)); //works, I checked it
 double probtoA=as<double>(runif(1,0,(clonerecA.nrow()/2)-1-i));
@@ -1670,31 +1655,6 @@ pick_toA=int(probtoA)+1;
 
 BtoAlist.erase(pick_fromB);
 AfromBlist.erase(pick_toA);
-
-//here is going other way
-double probfromA=as<double>(runif(1,0,(clonerecA.nrow()/2)-1-i)); //works, I checked it
-double probtoB=as<double>(runif(1,0,(clonerecB.nrow()/2)-1-i));
-
-int pick_fromA=int(probfromA);
-if((probfromA+0.5)>=(int(probfromA)+1)){
-pick_fromA=int(probfromA)+1;
-}
-
-int pick_toB=int(probtoB);
-if((probtoB+0.5)>=(int(probtoB)+1)){
-pick_toB=int(probtoB)+1;
-}
-
-NumericMatrix::Row moverA2Brow1=clonerecA(2*(AtoBlist[pick_fromA]),_);  //minus 1 is for indexing
-NumericMatrix::Row moverA2Brow2=clonerecA((2*(AtoBlist[pick_fromA]))+1,_);
-
-recB(2*(BfromAlist[pick_toB]),_)=moverA2Brow1;
-recB((2*(BfromAlist[pick_toB]))+1,_)=moverA2Brow2;
-
-AtoBlist.erase(pick_fromA);
-BfromAlist.erase(pick_toB);
-
-
 }//end of migration
 
 //for (int i=0;i<2*nmig;i++){
@@ -2568,6 +2528,7 @@ outmat[38]=NeBvec;
 
 //outmat[39]=popA;
 outmat[40]=nmig_vec;
+
 outmat[208]=fst_submatALL;
 outmat[209]=sig_submatALL; 
 outmat[210]=fst_submat9; //this is the subsampled Fst, 1st column is true
@@ -2593,5 +2554,5 @@ run2pops = cxxfunction(signature(INPUTS="numeric"), body = run8pops,plugin = "Rc
 
 out=run2pops(c(ssba,0.5,700,100,1,.34,0.12,1,1,3000,1000,1,1.15,1,7,1,13,mig,331000,0))
 
-save(out,file=paste("silverFF_Netest_",ssba,"_",mig,"_",seed,".RData",sep="")) 
+save(out,file=paste("silverFF_nomutation_20alleles_",ssba,"_",mig,"_",seed,".RData",sep="")) 
 #save(out,file="silverFF_nomutation_2alleles.RData")
