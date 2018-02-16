@@ -3,7 +3,7 @@ This repository contains code that will run simulations in the manuscript entitl
 "Inferring genetic connectivity in real populations, exemplified by coastal and oceanic Atlantic cod" by Spies et al.
 Each simulation was replicated 100 times with different random number seeds. 
 
-Data in Table S1 in the Appendix was run using the following code.
+Data in Table S1 in the Appendix was run using the following code. Instructions below assume that all code is implemented in batch mode by a simple runner file (e.g. "NAME_runner.r"). For simple example, open a single code file in the R computing software, such as silverFF.r, which was used to run base case scenarios. Compile the code it by running the third line from the bottom (run2pops = cxxfunction(signature(INPUTS="numeric"), body = run8pops,plugin = "RcppArmadillo"). If it does not compile, it may be that you need to install R libraries to compile Rcpp code. If you are using a mac or linux operating system, this will be relatively straightforward. On a PC, be sure to install TMB (https://github.com/kaskr/adcomp). Once the code is compiled, specify values for ssba (try 5457) and mig (try 55) and then run the next line of code (out=run2pops(c(ssba,0.5,700,100,1,.34,0.12,1,1,3000,1000,1,1.15,1,7,1,13,mig,331000,0)) to get data.
 
 The upper section of S1 "Migration from the N. Sea to the inner fjord" used the following code. 
 "silverFF.r" was used in simulations for Base case, half pop. size, and double pop. size implemented by the runner file 
